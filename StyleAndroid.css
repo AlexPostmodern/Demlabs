@@ -1,0 +1,48 @@
+#obj_MainWindow{
+    background: #fff;
+}
+
+#obj_SerialNumberLineEdit{
+    max-width: 600px;
+    max-height: 80px;
+    min-width: 600px;
+    min-height: 80px;
+    color:#000;
+    border-width: 0 0 3px 0;
+    border-style: solid;
+    background: transparent;
+    border-color:#E1E1E1;
+    font-size:40px;
+}
+
+#obj_SerialNumberLineEdit QLineEdit{
+    color:black;
+    font-size:40px;
+    min-width:120px;
+    height:60px;
+    border-style:none;
+    background:transparent;
+}
+
+#obj_SerialNumberLineEdit QLabel{
+    width:20px;
+    height:100px;
+    font-size: 40px;
+    color:#BFC9C8
+}
+
+#obj_placeholderLabel{
+    color:#B7C1BD;
+}
+
+#obj_labelPaste{
+    min-width:250px;
+    min-height:100px;
+    max-width:250px;
+    max-height:100px;
+}
+
+#obj_labelPaste QLabel{
+    font-size:35px;
+    color:#212121;
+}

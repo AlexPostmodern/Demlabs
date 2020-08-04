@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Style.css</file>
+        <file>Roboto-Regular.ttf</file>
+        <file>StyleAndroid.css</file>
+        <file>Popover.svg</file>
+    </qresource>
+</RCC>
