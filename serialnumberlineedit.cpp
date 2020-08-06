@@ -13,7 +13,7 @@ void SerialNumberLineEdit::setPlaceholderText(const QString& text)
 {
     m_placeholder=new QLabel(text);
     m_placeholder->setObjectName("obj_placeholderLabel");
-    m_layout->addWidget(m_placeholder);
+    m_layout->addWidget(m_placeholder,1,0,1,1);
 }
 
 void SerialNumberLineEdit::setFont(const QFont &font)
@@ -71,25 +71,42 @@ void SerialNumberLineEdit::clear()
 //private
 void SerialNumberLineEdit::init()
 {
-    m_layout=new QHBoxLayout;
+    m_layout = new QGridLayout;
+    m_layout->setContentsMargins(0, 0, 0, 0);
     setObjectName("obj_SerialNumberLineEdit");
     m_regExp=QRegExp(static_cast<QString>(VALIDATOR)+
                      "{1,"+QString::number(MAX_COUNT_CHAR)+"}");
 
     m_vecLabel.reserve(MAX_COUNT_PART-1);
     m_vecLineEdit.reserve(MAX_COUNT_PART);
-    m_vecLineEdit.push_back(createLineEdit());
 
-    m_layout->addWidget(m_vecLineEdit[0]);
-    for(int i=1;i<MAX_COUNT_PART;++i)
-    {
-        m_vecLabel.push_back(createDashLabel());
-        m_layout->addWidget(m_vecLabel[i-1]);
-        m_vecLineEdit.push_back(createLineEdit());
-        m_layout->addWidget(m_vecLineEdit[i]);
-    }
+    m_labelPaste = new LabelPaste;
+    m_layout->addWidget(m_labelPaste,0,1,1,2);
+    connect(this,SIGNAL(visiblePaste(bool)),m_labelPaste,SLOT(setVisibility(bool)));
+
     setPlaceholderText();
-    m_layout->setContentsMargins(0,10,0,10);
+
+    m_vecLineEdit.push_back(createLineEdit());
+    m_layout->addWidget(m_vecLineEdit[0],1,1,1,1);
+
+    int j{1};
+    for(int i=1;i<MAX_COUNT_PART;i++)
+    {
+
+        m_vecLabel.push_back(createDashLabel());
+        m_layout->addWidget(m_vecLabel[i-1],1,i+j,1,1);
+        m_vecLineEdit.push_back(createLineEdit());
+        ++j;
+        m_layout->addWidget(m_vecLineEdit[i],1,i+j,1,1);
+    }
+
+    int id = QFontDatabase::addApplicationFont(":/Roboto-Regular.ttf");
+    QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+    m_font.setFamily(family);
+    setFont(m_font);
+    m_labelPaste->setFont(m_font);
+
+    m_layout->setContentsMargins(0,0,0,13);
     setLayout(m_layout);
 }
 
@@ -360,6 +377,7 @@ void SecondLineEdit::pasteEvent()
 LabelPaste::LabelPaste(QWidget *parent)
     :QLabel(parent)
 {
+
     setObjectName("obj_labelPaste");
     setPixmap(QPixmap(":/Popover.svg"));
     m_op=new QGraphicsOpacityEffect;

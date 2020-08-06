@@ -4,7 +4,6 @@
 #include "serialnumberlineedit.h"
 #include <QMainWindow>
 #include <QPushButton>
-#include <QFontDatabase>
 
 class MainWindow : public QMainWindow
 {

@@ -8,6 +8,8 @@
 #include <QQueue>
 #include <QKeyEvent>
 #include <QGraphicsOpacityEffect>
+#include <QGridLayout>
+#include <QFontDatabase>
 #include "CustomLineEditBase.h"
 
 #ifndef MAX_COUNT_CHAR
@@ -32,6 +34,7 @@ class SerialNumberLineEdit:public QLineEdit
 {
     Q_OBJECT
     friend class SecondLineEdit;
+    friend class LabelPaste;
 
 public:
 
@@ -77,13 +80,15 @@ protected:
     virtual void focusInEvent(QFocusEvent *) override;
     virtual void focusOutEvent(QFocusEvent *) override;
 private:
-    QHBoxLayout* m_layout{Q_NULLPTR};
+    QGridLayout* m_layout{Q_NULLPTR};
     QVector <SecondLineEdit*>m_vecLineEdit{};
     QVector <QLabel*>m_vecLabel{};
     QLabel* m_placeholder{Q_NULLPTR};
     QString m_serialNumber{};
     QRegExp m_regExp{};
     bool m_isFilledOut{false};
+    LabelPaste* m_labelPaste{Q_NULLPTR};
+    QFont m_font{};
 };
 
 
@@ -104,8 +109,10 @@ protected:
     virtual void keyPressEvent(QKeyEvent *event) override;
     virtual void pasteEvent();
 private:
+
     SecondLineEdit(QWidget* parent = Q_NULLPTR)
         :QLineEdit(parent){}
+
     static bool inFocus;
 };
 
@@ -114,12 +121,13 @@ class LabelPaste:public QLabel
 {
     Q_OBJECT
     friend class SerialNumberLineEdit;
-public:
-    LabelPaste(QWidget* parent = Q_NULLPTR);
-    void setFont(const QFont& font);
 private slots:
     void setVisibility(bool);
 private:
+
+    LabelPaste(QWidget* parent = Q_NULLPTR);
+    void setFont(const QFont& font);
+
     QGraphicsOpacityEffect* m_op{Q_NULLPTR};
     QLabel* m_labelPaste{Q_NULLPTR};
     QVBoxLayout* m_layout{Q_NULLPTR};

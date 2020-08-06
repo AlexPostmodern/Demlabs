@@ -5,9 +5,9 @@
 
 #obj_SerialNumberLineEdit{
     max-width: 322px;
-    max-height: 48px;
+    max-height: 75px;
     min-width: 322px;
-    min-height: 48px;
+    min-height: 75px;
     color:#000;
     border-width: 0 0 1px 0;
     border-style: solid;   
@@ -28,7 +28,6 @@
 
 #obj_SerialNumberLineEdit QLabel{
     width:5px;
-    height:48px;
     font-size: 16px;
     color:#BFC9C8;
 }
@@ -39,9 +38,9 @@
 
 #obj_labelPaste{
     min-width:71px;
-    min-height:46px;
+    min-height:45.5px;
     max-width:71px;
-    max-height:46px;
+    max-height:45.5px;
 }
 
 #obj_labelPaste QLabel{
