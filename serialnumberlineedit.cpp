@@ -1,4 +1,6 @@
 #include "serialnumberlineedit.h"
+#include <QPainter>
+#include <QTextEdit>
 
 bool SecondLineEdit::inFocus=false;
 
@@ -11,7 +13,7 @@ SerialNumberLineEdit::SerialNumberLineEdit(QWidget *parent)
 
 void SerialNumberLineEdit::setPlaceholderText(const QString& text)
 {
-    m_placeholder=new QLabel(text);
+    m_placeholder->setText(text);
     m_placeholder->setObjectName("obj_placeholderLabel");
     m_layout->addWidget(m_placeholder,1,0,1,1);
 }
@@ -72,6 +74,7 @@ void SerialNumberLineEdit::clear()
 void SerialNumberLineEdit::init()
 {
     m_layout = new QGridLayout;
+    m_placeholder=new QLabel;
     m_layout->setContentsMargins(0, 0, 0, 0);
     setObjectName("obj_SerialNumberLineEdit");
     m_regExp=QRegExp(static_cast<QString>(VALIDATOR)+
@@ -363,6 +366,37 @@ void SecondLineEdit::keyPressEvent(QKeyEvent *event)
     }
 
     QLineEdit::keyPressEvent(event);
+}
+
+void SecondLineEdit::paintEvent(QPaintEvent *event)
+{
+    QLineEdit::paintEvent(event);
+    if (hasFocus())
+    {
+/*перекрасить каретку у QTextEdit получилось,
+у QLineEdit принцип должен быть такой же,
+но если не получится, придется использовать QTextEdit
+
+(m_paint)?m_paint=false:m_paint=true;
+const QRect qRect = cursorRect(textCursor());
+QPainter qPainter(viewport());
+if(m_paint) qPainter.fillRect(qRect, QColor("#00A86C"));
+else qPainter.fillRect(qRect, QColor("white"));*/
+
+
+
+        //QSize sizeRect(-5,20);
+        //QRect qRect = cursorRect();
+        //qRect.setSize(sizeRect);
+        //qRect.setSize(sizeRect);
+        //qDebug()<<cursorRect()<<qRect;
+        //qDebug()<<cursorPosition();
+        const QRect qRect(-3,1,4,15);
+        QPainter p(this);
+        p.fillRect(qRect, QColor("#00A86C"));
+
+        //QTextLayout::drawCursor(qPainter,point,cursorPosition(),5);
+    }
 }
 
 void SecondLineEdit::pasteEvent()
