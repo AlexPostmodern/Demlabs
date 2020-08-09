@@ -5,8 +5,9 @@
 
 int main(int argc, char *argv[])
 {
+
     QApplication a(argc, argv);
-    QFile style(":/Style.css");
+    /*QFile style(":/Style.css");
 #ifdef Q_OS_ANDROID
     style.setFileName(":/StyleAndroid.css");
 #endif
@@ -14,7 +15,7 @@ int main(int argc, char *argv[])
     {
         qApp->setStyleSheet(style.readAll());
         style.close();
-    }
+    }*/
     MainWindow w;
     w.setObjectName("obj_MainWindow");
     w.setFixedSize(360,640);

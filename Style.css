@@ -1,8 +1,3 @@
-#obj_MainWindow{
-    background: #fff;
-}
-
-
 #obj_SerialNumberLineEdit{
     max-width: 322px;
     max-height: 75px;
@@ -29,7 +24,10 @@
 #obj_SerialNumberLineEdit QLabel{
     width:5px;
     font-size: 16px;
-    color:#BFC9C8;
+}
+
+#obj_DashLabel{
+   color:transparent;
 }
 
 #obj_placeholderLabel{
@@ -48,4 +46,35 @@
     color:#212121;
 }
 
+/*************out of focus with content*************/
+#obj_SerialNumberLineEdit[inFocus="0"]{
+    border-color:#E1E1E1;
+}
+#obj_SerialNumberLineEdit QLineEdit[inFocus="0"]{
+    color:black;
+}
+#obj_DashLabel[inFocus="0"]{
+    color:#BFC9C8;
+}
+
+/*************out of focus without content*************/
+#obj_SerialNumberLineEdit[inFocus="1"]{
+    border-color:#E1E1E1;
+}
+
+/*************in focus*************/
+#obj_SerialNumberLineEdit[inFocus="2"]{
+    border-color:#00A86C;
+}
+#obj_SerialNumberLineEdit QLineEdit[inFocus="2"]{
+    color:#00A86C;
+}
+
+/*************empty/with content*************/
+#obj_DashLabel[empty=true]{
+    color:transparent;
+}
+#obj_DashLabel[empty=false]{
+    color:#BFC9C8;
+}
 

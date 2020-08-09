@@ -10,6 +10,7 @@
 #include <QGraphicsOpacityEffect>
 #include <QGridLayout>
 #include <QFontDatabase>
+#include <QMouseEvent>
 #include "CustomLineEditBase.h"
 
 #ifndef MAX_COUNT_CHAR
@@ -28,6 +29,15 @@
 #define VALIDATOR "[A-Z0-9]"
 #endif
 
+#ifndef PATH_CSS
+    #ifdef Q_OS_ANDROID
+        #define PATH_CSS ":/StyleAndroid.css"
+    #else
+        #define PATH_CSS ":/Style.css"
+    #endif
+#endif
+
+void updateCSS(QWidget* widget=nullptr);
 class SecondLineEdit;
 class LabelPaste;
 class SerialNumberLineEdit:public QLineEdit
@@ -91,6 +101,10 @@ private:
     bool m_isFilledOut{false};
     LabelPaste* m_labelPaste{Q_NULLPTR};
     QFont m_font{};
+
+    enum state{outFocus_withContent,
+              outFocus_withoutContent,
+              inFocus};
 };
 
 
@@ -124,6 +138,8 @@ class LabelPaste:public QLabel
 {
     Q_OBJECT
     friend class SerialNumberLineEdit;
+signals:
+    void signal_clickPaste();
 private slots:
     void setVisibility(bool);
 private:
@@ -134,6 +150,8 @@ private:
     QGraphicsOpacityEffect* m_op{Q_NULLPTR};
     QLabel* m_labelPaste{Q_NULLPTR};
     QVBoxLayout* m_layout{Q_NULLPTR};
+protected:
+    void mousePressEvent(QMouseEvent *ev) override;
 };
 
 #endif // SERIALNUMBERLINEEDIT_H

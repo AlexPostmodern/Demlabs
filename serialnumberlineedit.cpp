@@ -111,6 +111,7 @@ void SerialNumberLineEdit::init()
 
     m_layout->setContentsMargins(0,0,0,13);
     setLayout(m_layout);
+    updateCSS();
 }
 
 SecondLineEdit* SerialNumberLineEdit::createLineEdit()
@@ -118,6 +119,7 @@ SecondLineEdit* SerialNumberLineEdit::createLineEdit()
     static int i=1;
     SecondLineEdit* temp=new SecondLineEdit;
     temp->setObjectName("obj_SecondLineEdit_"+QString::number(i));
+    if(i==1) connect(m_labelPaste,SIGNAL(signal_clickPaste()),temp,SLOT(paste()));
     ++i;
     QValidator* validator=new QRegExpValidator(m_regExp);
     temp->setValidator(validator);
@@ -128,7 +130,7 @@ SecondLineEdit* SerialNumberLineEdit::createLineEdit()
     connect(temp,SIGNAL(textEdited(QString)),this,SLOT(slot_textEdited(QString)));
     connect(temp,SIGNAL(signal_lineEditIsEmpty()),SLOT(slot_changeFocusBackspace()));
     connect(temp,SIGNAL(textChanged(QString)),SLOT(slot_textChanged(QString)));
-    connect(temp,SIGNAL(signal_pasteEvent(QString)),SLOT(slot_paste(QString)));
+    connect(temp,SIGNAL(signal_pasteEvent(QString)),SLOT(slot_paste(QString)));  
     return temp;
 }
 QLabel* SerialNumberLineEdit::createDashLabel()
@@ -137,7 +139,6 @@ QLabel* SerialNumberLineEdit::createDashLabel()
     temp->setObjectName("obj_DashLabel");
     temp->setAlignment(Qt::AlignCenter);
     temp->setVisible(false);
-    temp->setStyleSheet("QLabel{color:transparent;}");
     return temp;
 }
 
@@ -145,16 +146,19 @@ void SerialNumberLineEdit::paint_outFocusWithContent()
 {
     for(auto& el:m_vecLineEdit)
     {
-        el->setStyleSheet("QLineEdit{color:black;}");
+        el->setProperty("inFocus", state::outFocus_withContent);
+        updateCSS(el);
         el->setVisible(true);
     }
     for(auto& el:m_vecLabel)
     {
-        el->setStyleSheet("QLabel{color:#BFC9C8;}");
+        el->setProperty("inFocus", state::outFocus_withContent);
+        updateCSS(el);
         el->setVisible(true);
     }
     m_placeholder->setVisible(false);
-    setStyleSheet("QLineEdit{border-color:#E1E1E1;}");
+    setProperty("inFocus", state::outFocus_withContent);
+    updateCSS(this);
 }
 
 void SerialNumberLineEdit::paint_outFocusWithoutContent()
@@ -164,7 +168,8 @@ void SerialNumberLineEdit::paint_outFocusWithoutContent()
         el->setVisible(false);
     for(auto& el:m_vecLabel)
         el->setVisible(false);
-    setStyleSheet("QLineEdit{border-color:#E1E1E1;}");
+    setProperty("inFocus", state::outFocus_withoutContent);
+    updateCSS(this);
 }
 
 void SerialNumberLineEdit::paint_inFocus()
@@ -173,11 +178,13 @@ void SerialNumberLineEdit::paint_inFocus()
     for(auto& el:m_vecLineEdit)
     {
         el->setVisible(true);
-        el->setStyleSheet("QLineEdit{color:#00A86C;}");
+        el->setProperty("inFocus", state::inFocus);
+        updateCSS(el);
     }
     for(auto& el:m_vecLabel)
         el->setVisible(true);
-    setStyleSheet("QLineEdit{border-color:#00A86C;}");
+    setProperty("inFocus", state::inFocus);
+    updateCSS(this);
 }
 
 
@@ -206,19 +213,19 @@ void SerialNumberLineEdit::slot_textChanged(QString)
     for(const auto& el:m_vecLineEdit)
         m_serialNumber.append(el->text());
 
-    QString style{};
+    bool empty{};
     if(m_serialNumber.count()>0)
-    {
-        style="QLabel{color:#BFC9C8;}";
         emit visiblePaste(false);
-    }
     else
     {
-        style="QLabel{color:transparent;}";
+        empty=true;
         emit visiblePaste(true);
     }
     for(auto& el:m_vecLabel)
-        el->setStyleSheet(style);
+    {
+        el->setProperty("empty",empty);
+        updateCSS(el);
+    }
 
     if (m_serialNumber.count()==MAX_COUNT_CHAR * MAX_COUNT_PART)
     {
@@ -259,7 +266,6 @@ void SerialNumberLineEdit::slot_checkOutOfLineEdit()
 
     #ifdef Q_OS_ANDROID
         QApplication::inputMethod()->hide();
-
     #endif
 
         }
@@ -298,6 +304,8 @@ void SerialNumberLineEdit::slot_paste(QString text)
             temp.remove(0,MAX_COUNT_CHAR);
         }
     }
+    m_vecLineEdit.back()->setFocus();
+    QTimer::singleShot(0, m_vecLineEdit.back(), &QLineEdit::deselect);
 }
 
 //protected
@@ -325,6 +333,7 @@ void SecondLineEdit::paste()
     if(text.count()==MAX_COUNT_CHAR*MAX_COUNT_PART)
         pasteEvent();
     else QLineEdit::paste();
+    QTimer::singleShot(0, this, &QLineEdit::deselect);
 }
 
 void SecondLineEdit::focusInEvent(QFocusEvent *event)
@@ -391,9 +400,14 @@ else qPainter.fillRect(qRect, QColor("white"));*/
         //qRect.setSize(sizeRect);
         //qDebug()<<cursorRect()<<qRect;
         //qDebug()<<cursorPosition();
-        const QRect qRect(-3,1,4,15);
+
+
+
+        /*const QRect qRect(-3,1,4,15);
         QPainter p(this);
-        p.fillRect(qRect, QColor("#00A86C"));
+        p.fillRect(qRect, QColor("#00A86C"));*/
+
+
 
         //QTextLayout::drawCursor(qPainter,point,cursorPosition(),5);
     }
@@ -411,7 +425,6 @@ void SecondLineEdit::pasteEvent()
 LabelPaste::LabelPaste(QWidget *parent)
     :QLabel(parent)
 {
-
     setObjectName("obj_labelPaste");
     setPixmap(QPixmap(":/Popover.svg"));
     m_op=new QGraphicsOpacityEffect;
@@ -432,7 +445,40 @@ void LabelPaste::setFont(const QFont &font)
 
 void LabelPaste::setVisibility(bool vis)
 {
-    if(vis) m_op->setOpacity(1);
-    else m_op->setOpacity(0);
+    if(vis)
+    {
+        m_op->setOpacity(1);
+        setCursor(Qt::PointingHandCursor);
+    }
+    else
+    {
+        m_op->setOpacity(0);
+        unsetCursor();
+    }
     setGraphicsEffect(m_op);
+}
+
+void LabelPaste::mousePressEvent(QMouseEvent *ev)
+{
+    if(ev->button()==Qt::LeftButton)
+    {
+        emit signal_clickPaste();
+        return;
+    }
+    QLabel::mousePressEvent(ev);
+}
+
+
+
+//********************Secondary Functions********************
+
+void updateCSS(QWidget *widget)
+{
+    QFile style(PATH_CSS);
+    if (style.open(QFile::ReadOnly))
+    {
+        if(widget==nullptr)qApp->setStyleSheet(style.readAll());
+        else widget->setStyleSheet(style.readAll());
+        style.close();
+    }
 }
