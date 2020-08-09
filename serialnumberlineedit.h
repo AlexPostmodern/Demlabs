@@ -41,6 +41,8 @@ public:
     SerialNumberLineEdit(QWidget* parent = Q_NULLPTR);
 
     void setPlaceholderText(const QString& text="Serial number");
+    QString placeholderText()const{return m_placeholder->text();}
+
     void setFont(const QFont& font);
     bool setSerial(const QString& serialNumber);
 
